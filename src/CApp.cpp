@@ -5,7 +5,6 @@
 #include <fstream> 
 //#include <glob.h>
 
-#include "rapidjson/pointer.h"
 #include "rapidjson/stringbuffer.h"
 
 #include "JsonUtil.h"
@@ -83,16 +82,11 @@ int CApp::ReadSecondaryJson()
 
 int CApp::WritePrimaryJson()
 {
-	rapidjson::Value* pJson = &json;
-	if (!cli.jsonPath.empty())
+	const rapidjson::Value* pJson = GetJsonNode(json, cli.jsonPath);
+	if (nullptr == pJson)
 	{
-		rapidjson::Pointer jpath(cli.jsonPath.c_str(), cli.jsonPath.size());
-		pJson = jpath.Get(json);
-		if (nullptr == pJson)
-		{
-			fprintf(stderr, "Can not resolve the json path pointer: %s\n", cli.jsonPath.c_str());
-			return -1;
-		}
+		fprintf(stderr, "Can not resolve the json path pointer: %s#%s\n", PrimaryJsonFile(), cli.jsonPath.c_str());
+		return -1;
 	}
 
 	bool pretty = cli.printInPretty || !cli.printInLine;
@@ -405,15 +399,15 @@ int CApp::CompareJsonOper(const rapidjson::Value& a, const rapidjson::Value& b)
 	bool bEqual = (cli.equalCompare || (!cli.lessCompare && !cli.greatCompare));
 	if (bEqual)
 	{
-		iRet = CompareJsonEQ(a, b);
+		iRet = CompareJsonEQ(a, b, cli.jsonPath, cli.jsonPath2);
 	}
 	else if (cli.lessCompare)
 	{
-		iRet = compareJsonLE(a, b);
+		iRet = CompareJsonLE(a, b, cli.jsonPath, cli.jsonPath2);
 	}
 	else if (cli.greatCompare)
 	{
-		iRet = compareJsonGE(a, b);
+		iRet = CompareJsonGE(a, b, cli.jsonPath, cli.jsonPath2);
 	}
 	else
 	{
@@ -421,32 +415,12 @@ int CApp::CompareJsonOper(const rapidjson::Value& a, const rapidjson::Value& b)
 		return -1;
 	}
 
-	return 0;
+	return iRet;
 }
 
 void CApp::SplitJsonFile(std::string& jsonFile, std::string& jsonPath)
 {
-	if (jsonFile.empty())
-	{
-		return;
-	}
-
-	size_t pos = jsonFile.find_first_of("#:?");
-	if (pos != std::string::npos)
-	{
-		jsonPath = jsonFile.substr(pos + 1);
-		jsonFile.erase(pos);
-	}
-}
-
-const rapidjson::Value* CApp::GetJsonNode(const rapidjson::Value& json, const std::string& path)
-{
-	if (path.empty())
-	{
-		return &json;
-	}
-	rapidjson::Pointer jpath(path.c_str(), path.size());
-	return jpath.Get(json);
+	BreakString(jsonFile, "#:?", jsonPath);
 }
 
 void CApp::ClearSchema()
@@ -499,6 +473,7 @@ void CApp::ResetSchemaValidator()
 	}
 }
 
+// todo: move to JsonUtil.cpp?  but output not centralize
 int CApp::ValidatorJson(const rapidjson::Value& doc)
 {
 	if (m_pSchemaValidator == nullptr)
@@ -507,7 +482,8 @@ int CApp::ValidatorJson(const rapidjson::Value& doc)
 		return -1;
 	}
 
-	if (!doc.Accept(*m_pSchemaValidator)) {
+	if (!doc.Accept(*m_pSchemaValidator))
+	{
 		rapidjson::StringBuffer sb;
 		m_pSchemaValidator->GetInvalidSchemaPointer().StringifyUriFragment(sb);
 		fprintf(stderr, "Invalid schema: %s\n", sb.GetString());

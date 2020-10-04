@@ -153,6 +153,7 @@
     <ClInclude Include="..\src\CAppCLI.h" />
     <ClInclude Include="..\src\CommUtil.h" />
     <ClInclude Include="..\src\CSchemaProvider.h" />
+    <ClInclude Include="..\src\JsonConfig.h" />
     <ClInclude Include="..\src\JsonUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

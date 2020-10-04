@@ -50,5 +50,8 @@
     <ClInclude Include="..\src\CSchemaProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\JsonConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

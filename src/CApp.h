@@ -3,7 +3,7 @@
 
 #include "CAppCLI.h"
 
-#include "rapidjson/document.h"
+#include "JsonConfig.h"
 #include "rapidjson/schema.h"
 
 #include "CSchemaProvider.h"
@@ -37,8 +37,6 @@ private:
 
 	// spile file to two parts: filename.json#/root/path/to/node
 	static void SplitJsonFile(std::string& jsonFile, std::string& jsonPath);
-	// get json node by path
-	const static rapidjson::Value* GetJsonNode(const rapidjson::Value& json, const std::string& path);
 
 	int BuildSchema();
 	void ClearSchema();

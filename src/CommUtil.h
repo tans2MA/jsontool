@@ -7,6 +7,7 @@
 
 const char SLASH_WIN = '\\';
 const char SLASH_UIX = '/';
+#define SLASH_ALL "/\\"
 
 // add slash to tail of path string if needed, return true if really added
 bool FixPathTail(std::string& path);
@@ -22,5 +23,10 @@ bool RemoveDir(std::string& path);
 
 // get te directory path of a path.
 std::string GetPathDir(const std::string& path);
+
+// break string `source` by an char within `any` like `find_first_of()` in string
+// trim `source` to left part, save the right part to `rest`
+// return ture if actually took such operation.
+bool BreakString(std::string& source, const char* any, std::string& rest);
 
 #endif /* end of include guard: COMMUTIL_H__ */

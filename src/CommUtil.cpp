@@ -70,10 +70,28 @@ bool RemoveDir(std::string& path)
 
 std::string GetPathDir(const std::string& path)
 {
-	size_t pos = path.find_last_of(SLASH_UIX);
+	size_t pos = path.find_last_of(SLASH_ALL);
 	if (pos != std::string::npos)
 	{
 		return path.substr(0, pos + 1);
 	}
 	return std::string();
+}
+
+bool BreakString(std::string& source, const char* any, std::string& rest)
+{
+	if (source.empty())
+	{
+		return false;
+	}
+
+	size_t pos = source.find_first_of(any);
+	if (pos != std::string::npos)
+	{
+		rest = source.substr(pos + 1);
+		source.erase(pos);
+		return true;
+	}
+
+	return false;
 }

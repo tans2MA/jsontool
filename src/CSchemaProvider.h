@@ -3,7 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
+#include "JsonConfig.h"
 #include "rapidjson/schema.h"
 
 class CSchemaProvider : public rapidjson::IRemoteSchemaDocumentProvider
@@ -19,19 +21,19 @@ public:
 	CSchemaProvider(){}
 	~CSchemaProvider()
 	{
-		for (auto& pSchema : m_pSchemas)
+		for (auto& item : m_mapSchemas)
 		{
-			if (nullptr != pSchema)
+			if (item.second != nullptr)
 			{
-				delete pSchema;
-				pSchema = nullptr;
+				delete item.second;
+				item.second = nullptr;
 			}
 		}
 	}
 
 private:
 	std::string m_baseDir;
-	std::vector<rapidjson::SchemaDocument*> m_pSchemas;
+	std::map<std::string, rapidjson::SchemaDocument*>m_mapSchemas;
 };
 
 #endif /* end of include guard: CSCHEMAPROVIDER_H__ */
