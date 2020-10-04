@@ -1,3 +1,7 @@
 .vs
+*.vcxproj.user
 Debug
 bin.Debug
+
+# 3rd party lib
+include/CLI11.hpp
